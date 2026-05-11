@@ -1,0 +1,44 @@
+name: "SolisMon3"
+version: "latest"
+slug: "solismon3"
+description: "Solis inverter monitor that publishes metrics to MQTT and Prometheus."
+url: "https://github.com/dnviti/solismon3"
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+init: false
+image: "ghcr.io/dnviti/solismon3"
+ports:
+  "18000/tcp": 18000
+ports_description:
+  "18000/tcp": "Prometheus metrics exporter"
+options:
+  inverter_serial: 123456789
+  inverter_ip: "192.168.1.55"
+  inverter_port: 8899
+  mqtt_server: "core-mosquitto"
+  mqtt_port: 1883
+  mqtt_topic: "solis/METRICS"
+  mqtt_user: ""
+  mqtt_pass: ""
+  check_interval: 30
+  mqtt_keepalive: 60
+  prometheus: true
+  modified_metrics: true
+  debug: false
+schema:
+  inverter_serial: int
+  inverter_ip: str
+  inverter_port: port
+  mqtt_server: str
+  mqtt_port: port
+  mqtt_topic: str
+  mqtt_user: str?
+  mqtt_pass: password?
+  check_interval: "int(5,)"
+  mqtt_keepalive: "int(10,)"
+  prometheus: bool
+  modified_metrics: bool
+  debug: bool

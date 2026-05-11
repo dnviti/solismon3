@@ -60,7 +60,7 @@ Run main.py
 Docker images is provided.   
 On your docker host create a folder solismon3/config and copy your modified config.py and registers.py files in there
 ```
-docker run -it -d --restart unless-stopped --name solismon3 -v /solismon3/config:/solismon3/config -p 18000:18000 nosireland/solismon3
+docker run -it -d --restart unless-stopped --name solismon3 -v /solismon3/config:/solismon3/config -p 18000:18000 ghcr.io/dnviti/solismon3:latest
 ```
 
 ### Docker Compose example
@@ -69,7 +69,7 @@ version: "3.4"
 
 services:
   solismon3:
-    image: nosireland/solismon3:latest
+    image: ghcr.io/dnviti/solismon3:latest
     container_name: solismon3
     restart: always
     ports:
@@ -80,6 +80,14 @@ services:
       options:
         max-size: 5m
 ```
+
+### Home Assistant app
+This repository can be added to Home Assistant as an app repository:
+```
+https://github.com/dnviti/solismon3
+```
+
+The app uses the prebuilt `ghcr.io/dnviti/solismon3:latest` image. The GitHub workflow only publishes that `latest` image from the `master` branch.
 
 ### Testing
 To see if it is running properly I would advise enabling debugging `DEBUG = False` and also `PROMETHEUS = True`

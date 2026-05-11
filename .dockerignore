@@ -1,0 +1,11 @@
+.git
+.github
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+solismon3/
+examples/
