@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 
@@ -25,7 +26,8 @@ def _bool(value):
         return True
     if normalized in {"0", "false", "no", "off"}:
         return False
-    raise ValueError(f"Invalid boolean value: {value}")
+    logging.warning("Invalid boolean value %r; defaulting to False", value)
+    return False
 
 
 def _setting(name, default, cast=None):
@@ -34,7 +36,13 @@ def _setting(name, default, cast=None):
         return default
     if cast is None:
         return value
-    return cast(value)
+    # Never let a malformed env var / option crash the process at import time;
+    # log it and fall back to the known-good default instead.
+    try:
+        return cast(value)
+    except (ValueError, TypeError) as e:
+        logging.warning("Invalid value %r for %s (%s); using default %r", value, name, e, default)
+        return default
 
 
 INVERTER_SERIAL = _setting("inverter_serial", 123456789, int)   # WiFi stick serial number
@@ -45,7 +53,7 @@ MQTT_PORT = _setting("mqtt_port", 1883, int)                    # Port number of
 MQTT_TOPIC = _setting("mqtt_topic", "solis/METRICS")            # MQTT topic to use
 MQTT_USER = _setting("mqtt_user", "foo")                        # MQTT auth user
 MQTT_PASS = _setting("mqtt_pass", "bar")                        # MQTT auth password
-CHECK_INTERVAL = _setting("check_interval", 30, int)            # How often to check(seconds), only applies when 'PROMETHEUS = False' otherwise uses Prometheus scrape interval
+CHECK_INTERVAL = max(1, _setting("check_interval", 30, int))    # How often to scrape(seconds); clamped to >= 1 so a bad value can't busy-loop or break sleep()
 MQTT_KEEPALIVE = _setting("mqtt_keepalive", 60, int)            # MQTT keepalive
 PROMETHEUS = _setting("prometheus", False, _bool)               # Enable Prometheus exporter
 PROMETHEUS_PORT = _setting("prometheus_port", 18000, int)       # Port to use for Prometheus exporter
